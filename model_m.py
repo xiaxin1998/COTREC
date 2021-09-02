@@ -171,7 +171,7 @@ class CoT(Module):
 
     def example_predicting(self, item_emb, sess_emb):
         x_u = torch.matmul(item_emb, sess_emb)
-        pos = torch.softmax(x_u, -1)
+        pos = torch.softmax(x_u, 0)
         return pos
 
     def adversarial_item(self, item_emb, tar,sess_emb):
