@@ -1,6 +1,6 @@
 import time
 from util import Data
-from model_m import *
+from model import *
 import os
 import argparse
 import pickle
