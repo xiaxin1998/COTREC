@@ -81,9 +81,9 @@ class SessConv(Module):
         return session_emb
 
 
-class CoT(Module):
+class COTREC(Module):
     def __init__(self, adjacency, n_node, lr, layers, l2, beta,lam,eps, dataset, emb_size=100, batch_size=100):
-        super(CoT, self).__init__()
+        super(COTREC, self).__init__()
         self.emb_size = emb_size
         self.batch_size = batch_size
         self.n_node = n_node
