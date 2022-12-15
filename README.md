@@ -1,7 +1,7 @@
 # COTREC
 Codes for CIKM'21 paper 'Self-Supervised Graph Co-Training for Session-based Recommendation'.
 
-Requirements: Python 3.7, Pytorch 1.6.0
+Requirements: Python 3.7, Pytorch 1.6.0, Numpy 1.18.1
 
 Best Hyperparameter:
 + Tmall: beta=0.01, alpha=0.005, eps=0.2
