@@ -30,9 +30,11 @@ class ItemConv(Module):
         super(ItemConv, self).__init__()
         self.emb_size = emb_size
         self.layers = layers
-        self.w_item = {}
-        for i in range(self.layers):
-            self.w_item['weight_item%d' % (i)] = nn.Linear(self.emb_size, self.emb_size, bias=False)
+        # self.w_item = {}
+        # for i in range(self.layers):
+        #     self.w_item['weight_item%d' % (i)] = nn.Linear(self.emb_size, self.emb_size, bias=False)
+        self.w_item = nn.ModuleList([nn.Linear(self.emb_size, self.emb_size, bias=False) for i in range(self.layers)])
+    
 
     def forward(self, adjacency, embedding):
         values = adjacency.data
@@ -45,7 +47,7 @@ class ItemConv(Module):
         item_embedding_layer0 = item_embeddings
         final = [item_embedding_layer0]
         for i in range(self.layers):
-            item_embeddings = trans_to_cuda(self.w_item['weight_item%d' % (i)])(item_embeddings)
+            item_embeddings = trans_to_cuda(self.w_item[i])(item_embeddings)
             item_embeddings = torch.sparse.mm(trans_to_cuda(adjacency), item_embeddings)
             final.append(F.normalize(item_embeddings, dim=-1, p=2))
         item_embeddings = np.sum(final, 0)/(self.layers+1)
@@ -58,9 +60,10 @@ class SessConv(Module):
         self.emb_size = emb_size
         self.batch_size = batch_size
         self.layers = layers
-        self.w_sess = {}
-        for i in range(self.layers):
-            self.w_sess['weight_sess%d' % (i)] = nn.Linear(self.emb_size, self.emb_size, bias=False)
+        # self.w_sess = {}
+        # for i in range(self.layers):
+        #     self.w_sess['weight_sess%d' % (i)] = nn.Linear(self.emb_size, self.emb_size, bias=False)
+        self.w_sess = nn.ModuleList([nn.Linear(self.emb_size, self.emb_size, bias=False) for i in range(self.layers)])
 
     def forward(self, item_embedding, D, A, session_item, session_len):
         zeros = torch.cuda.FloatTensor(1, self.emb_size).fill_(0)
@@ -74,7 +77,7 @@ class SessConv(Module):
         session = [session_emb]
         DA = torch.mm(D, A).float()
         for i in range(self.layers):
-            session_emb = trans_to_cuda(self.w_sess['weight_sess%d' % (i)])(session_emb)
+            session_emb = trans_to_cuda(self.w_sess[i])(session_emb)
             session_emb = torch.mm(DA, session_emb)
             session.append(F.normalize(session_emb, p=2, dim=-1))
         sess = trans_to_cuda(torch.tensor([item.cpu().detach().numpy() for item in session]))
